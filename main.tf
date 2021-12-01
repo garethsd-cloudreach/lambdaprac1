@@ -94,4 +94,33 @@ resource "aws_iam_role_policy_attachment" "read_write_s3" {
     ]
 }
 
+data "archive_file" "init" {
+  type             = "zip"
+  source_file      = "${path.module}/script.py"
+  output_path      = "${path.module}/script.zip"
+}
 
+resource "aws_s3_bucket_object" "file_upload" {
+  bucket = "lambdaprac1289"
+  key    = "lambdaprac1289/terraform-training"
+  source = "~/documents/Talent-Academy/lambdaprac1/script.zip"
+
+  depends_on = [
+    data.archive_file.init
+  ]
+}
+
+resource "aws_lambda_function" "pets_lambda_test" {
+  filename = "${path.module}/script.zip"
+  function_name = "lambda_test"
+  description   = "testing_lambda_with_terraform"
+  memory_size = 512
+  timeout     = 300
+  timeouts {
+  create = "5m"
+  }
+  runtime          = "python3.8"
+  role             = aws_iam_role.iam_role_for_lambda.arn
+  handler          = "script.lambda_handler"
+
+}

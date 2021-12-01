@@ -1,10 +1,15 @@
+import json
 import boto3
 
-session = boto3.Session()
+s3 = boto3.resource('s3')
 
-s3 = session.resource('s3')
+def lambda_handler(event, context):
+  bucket =  'lambdaprac1289'
+  key = 'lambdaprac1289/sample_data'
+  petname= 'Meowsalot'
 
-my_bucket = s3.Bucket('lambdaprac1289')
+  obj = s3.Object(bucket, key)
+  petname = obj.get()['Body'].read().decode('utf-8')
+  json_data = json.loads(petname)
 
-for my_bucket_object in my_bucket.objects.all():
-    print(my_bucket_object)
+  print(json_data)
