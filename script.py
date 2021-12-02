@@ -1,24 +1,18 @@
 import json
 import boto3
+import botocore
 
-s3 = boto3.resource('s3')
+s3 = boto3.client('s3')
 
 def lambda_handler(event, context):
-  print(event)
-  
-  #bucket =  'lambdaprac1289'
-  # key = 'sample_data'
-  # petname= ''
+  bucket = event['S3Bucket']
+  key = event['S3Prefix']
+  name = event['PetName']
 
-  # obj = s3.Object(bucket, key)
-  # petname = obj.get()['Body'].read()
-  # json_data = json.loads(petname)
-  # print(json_data)
+  obj = s3.get_object(Bucket = bucket, Key = key)
+  pets = json.loads(obj['Body'].read().decode('utf-8'))
 
-  # for pet in json_data["pets"]:
-  #     name=pet["name"]
-  #     if name == petname:
-  #       favouriteFoods=",".join(pet['favFoods'])
-  #       print(name + " Favourite Foods Are: " + favouriteFoods)
-  #     else:
-  #       print( "has not been found!")
+  for p in pets['pets']:
+    if name == p["name"] :
+      favouriteFoods=''.join(p['favFoods'])
+      print(name + "Fav foods are " + favouriteFoods)
