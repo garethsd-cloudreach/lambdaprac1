@@ -102,7 +102,7 @@ data "archive_file" "init" {
 
 resource "aws_s3_bucket_object" "file_upload" {
   bucket = "lambdaprac1289"
-  key    = "lambdaprac1289/terraform-training"
+  key    = "lambdaprac1289/terraform-training.zip"
   source = "~/documents/Talent-Academy/lambdaprac1/script.zip"
 
   depends_on = [
@@ -111,7 +111,7 @@ resource "aws_s3_bucket_object" "file_upload" {
 }
 
 resource "aws_lambda_function" "pets_lambda_test" {
-  filename = "${path.module}/script.zip"
+  filename      = data.archive_file.init.output_path
   function_name = "lambda_test"
   description   = "testing_lambda_with_terraform"
   memory_size = 512
@@ -122,5 +122,5 @@ resource "aws_lambda_function" "pets_lambda_test" {
   runtime          = "python3.8"
   role             = aws_iam_role.iam_role_for_lambda.arn
   handler          = "script.lambda_handler"
-
+  source_code_hash = data.archive_file.init.output_base64sha256
 }
