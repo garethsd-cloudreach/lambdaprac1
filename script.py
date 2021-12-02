@@ -16,4 +16,4 @@ def lambda_handler(event, context):
       name=pet
       if name == petname:
         favouriteFoods=",".join(pet['favFoods'])
-        return(name + " Favourite Foods Are: " + favouriteFoods)
+        print(name + " Favourite Foods Are: " + favouriteFoods)
